@@ -63,7 +63,7 @@ docker compose version
 Clone the repository:
 
 ```bash
-git clone https://github.com/SoltDown99/koda-init.git
+git clone https://github.com/SoltDown99/kodainit.git
 
 cd koda-init
 ```
@@ -141,7 +141,7 @@ http://localhost:8888/admin
 Default Administrator:
 
 ```text
-Email: admin@example.com
+Email: admin@koda.local
 Password: password
 ```
 

@@ -21,7 +21,9 @@ class InitCommand extends Command
     {
         $this
             ->setName('init')
-            ->setDescription('Create a new Laravel project with Docker and PostgreSQL')
+            ->setDescription(
+                'Create a new Laravel project with Docker, PostgreSQL and Filament'
+            )
             ->addArgument(
                 'name',
                 InputArgument::REQUIRED,
@@ -37,6 +39,7 @@ class InitCommand extends Command
         $name = $input->getArgument('name');
 
         if (is_dir($name)) {
+
             $output->writeln(
                 "<error>Directory '{$name}' already exists.</error>"
             );
@@ -97,22 +100,22 @@ class InitCommand extends Command
             $dockerLauncher->waitForDatabase($name);
 
             $output->writeln(
-                '<info>Running database migrations...</info>'
-            );
-
-            $output->writeln(
                 '<info>Waiting for application container...</info>'
             );
 
+            $dockerLauncher->waitForApp($name);
+
             $output->writeln(
-                '<info>Installing Filament 4...</info>'
+                '<info>Installing Filament 4 and admin panel...</info>'
             );
 
             $filamentInstaller = new FilamentInstaller();
 
             $filamentInstaller->install($name);
 
-            $dockerLauncher->waitForApp($name);
+            $output->writeln(
+                '<info>Running database migrations...</info>'
+            );
 
             $migrationRunner = new MigrationRunner();
 
@@ -128,28 +131,52 @@ class InitCommand extends Command
 
             $output->writeln('');
             $output->writeln(
-                '<info>✓ Project created successfully.</info>'
+                '<fg=green>✓ Project created successfully.</>'
             );
             $output->writeln('');
+
             $output->writeln(
                 "<comment>Project:</comment> {$name}"
             );
+
             $output->writeln(
                 '<comment>Laravel:</comment> 12'
             );
+
             $output->writeln(
                 '<comment>PHP:</comment> 8.4'
             );
+
             $output->writeln(
                 '<comment>Database:</comment> PostgreSQL 17'
             );
+
             $output->writeln(
                 '<comment>Web Server:</comment> Nginx'
             );
+
+            $output->writeln(
+                '<comment>Admin Panel:</comment> Filament 4'
+            );
+
             $output->writeln('');
+
             $output->writeln(
                 '<info>Application URL:</info> http://localhost:8888'
             );
+
+            $output->writeln(
+                '<info>Admin Panel:</info> http://localhost:8888/admin'
+            );
+
+            $output->writeln(
+                '<info>Admin Email:</info> admin@koda.local'
+            );
+
+            $output->writeln(
+                '<info>Admin Password:</info> password'
+            );
+
             $output->writeln('');
 
             return Command::SUCCESS;
@@ -157,13 +184,22 @@ class InitCommand extends Command
         } catch (Throwable $e) {
 
             $output->writeln('');
+
             $output->writeln(
                 '<error>Project creation failed.</error>'
+            );
+
+            $output->writeln('');
+
+            $output->writeln(
+                '<comment>Exception:</comment> ' . get_class($e)
             );
 
             $output->writeln(
                 "<error>{$e->getMessage()}</error>"
             );
+
+            $output->writeln('');
 
             return Command::FAILURE;
         }

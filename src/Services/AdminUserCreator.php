@@ -10,7 +10,7 @@ class AdminUserCreator
     {
         $command = "
         \$user = App\Models\User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@koda.local'],
             [
                 'name' => 'Administrator',
                 'password' => bcrypt('password'),
