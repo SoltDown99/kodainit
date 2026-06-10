@@ -1,0 +1,20 @@
+{
+  "name": "hectormontenegro/koda-init",
+  "description": "Laravel + Filament + Docker project initializer",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": "^8.4",
+    "symfony/console": "^7.3",
+    "symfony/process": "^7.3",
+    "symfony/filesystem": "^7.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "KodaInit\\": "src/"
+    }
+  },
+  "bin": [
+    "bin/koda"
+  ]
+}
