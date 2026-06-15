@@ -23,6 +23,7 @@ The goal is to eliminate repetitive project setup and provide a ready-to-develop
 - Install Filament 4
 - Create an administrator account automatically
 - Interactive configuration wizard (custom app port and admin credentials)
+- Host-aligned file permissions (no sudo needed to delete generated projects on Linux)
 - Ready-to-use development environment
 
 ---

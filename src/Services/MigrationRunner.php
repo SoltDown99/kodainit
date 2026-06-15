@@ -13,6 +13,8 @@ class MigrationRunner
             'compose',
             'exec',
             '-T',
+            '--user',
+            'www-data',
             'app',
             'php',
             'artisan',

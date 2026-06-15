@@ -4,6 +4,9 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
+      args:
+        UID: {{HOST_UID}}
+        GID: {{HOST_GID}}
 
     restart: unless-stopped
 

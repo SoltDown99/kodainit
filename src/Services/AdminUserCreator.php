@@ -33,6 +33,8 @@ class AdminUserCreator
             'compose',
             'exec',
             '-T',
+            '--user',
+            'www-data',
             'app',
             'php',
             'artisan',

@@ -1,5 +1,8 @@
 FROM php:8.4-fpm
 
+ARG UID=1000
+ARG GID=1000
+
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -18,6 +21,17 @@ RUN docker-php-ext-install \
     intl
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Align the www-data user/group with the host user so that files created
+# inside the container (storage, bootstrap/cache, vendor, etc.) are owned
+# by the host user and can be removed without sudo.
+RUN set -eux; \
+    if [ "$(id -u www-data)" != "${UID}" ] || [ "$(id -g www-data)" != "${GID}" ]; then \
+        groupmod -o -g "${GID}" www-data; \
+        usermod -o -u "${UID}" -g "${GID}" www-data; \
+    fi; \
+    mkdir -p /var/www; \
+    chown -R "${UID}":"${GID}" /var/www
 
 WORKDIR /var/www/html
 
