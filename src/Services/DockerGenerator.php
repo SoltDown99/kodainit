@@ -6,13 +6,16 @@ use RuntimeException;
 
 class DockerGenerator
 {
-    public function generate(string $projectPath): void
+    public function generate(string $projectPath, int $appPort = 8888): void
     {
         $this->createDirectories($projectPath);
 
         $this->copyTemplate(
             'docker-compose.stub',
-            $projectPath . '/docker-compose.yml'
+            $projectPath . '/docker-compose.yml',
+            [
+                '{{APP_PORT}}' => (string) $appPort,
+            ]
         );
 
         $this->copyTemplate(
@@ -49,7 +52,8 @@ class DockerGenerator
 
     private function copyTemplate(
         string $source,
-        string $destination
+        string $destination,
+        array $replacements = []
     ): void {
 
         $templatePath = __DIR__ . '/../../templates/' . $source;
@@ -74,6 +78,14 @@ class DockerGenerator
             "\n",
             $content
         );
+
+        if (! empty($replacements)) {
+            $content = str_replace(
+                array_keys($replacements),
+                array_values($replacements),
+                $content
+            );
+        }
 
         file_put_contents(
             $destination,

@@ -22,6 +22,7 @@ The goal is to eliminate repetitive project setup and provide a ready-to-develop
 - Run database migrations
 - Install Filament 4
 - Create an administrator account automatically
+- Interactive configuration wizard (custom app port and admin credentials)
 - Ready-to-use development environment
 
 ---
@@ -84,22 +85,56 @@ chmod +x bin/koda
 
 ## Usage
 
-Create a new project:
+Quick start (default configuration)
+
+Create a new project with the default settings:
 
 ```bash
 ./bin/koda init crm
 ```
 
-Koda Init will automatically:
+This uses the default application port (8888) and the default
+administrator account (admin@koda.local / password), without asking
+any questions.
 
-1. Create a new Laravel project
-2. Generate Docker configuration
-3. Configure PostgreSQL
-4. Build Docker images
-5. Start containers
-6. Install Filament
-7. Run migrations
-8. Create an administrator account
+Interactive mode
+
+Use the --interactive (or -i) flag to customize the project during
+creation:
+
+```bash
+./bin/koda init crm --interactive
+```
+
+```bash
+./bin/koda init crm --i
+```
+
+In interactive mode, Koda Init will ask for:
+
+Application port — the host port used to access the app via Nginx
+(default: 8888). Must be a number between 1 and 65535.
+Administrator name (default: Administrator)
+Administrator email (default: admin@koda.local), validated as a
+proper email address
+Administrator password — entered with hidden input and confirmed by
+typing it twice. Leave empty to keep the default password (password).
+
+Pressing Enter on any prompt accepts the default value shown in
+brackets.
+
+What Koda Init does
+
+Regardless of the mode used, Koda Init will automatically:
+
+- Create a new Laravel project
+- Generate Docker configuration (using the configured app port)
+- Configure PostgreSQL
+- Build Docker images
+- Start containers
+- Install Filament
+- Run migrations
+- Create an administrator account (using the configured credentials)
 
 ---
 
@@ -132,6 +167,9 @@ Application:
 http://localhost:8888
 ```
 
+If you used --interactive and chose a different port, replace 8888
+with the port you configured.
+
 Filament Admin Panel:
 
 ```text
@@ -144,6 +182,11 @@ Default Administrator:
 Email: admin@koda.local
 Password: password
 ```
+
+If you used --interactive, the admin panel uses the name, email and
+password you provided during setup instead of the defaults above.
+
+Change the administrator credentials immediately after the first login.
 
 > Change the administrator credentials immediately after the first login.
 
@@ -173,7 +216,7 @@ koda-init/
 - Global Composer installation
 - Custom admin credentials
 - Custom ports
-- Project configuration wizard
+- Project configuration wizard (--interactive flag)
 
 ### v0.3.0
 

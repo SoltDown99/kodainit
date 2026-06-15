@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "8888:80"
+      - "{{APP_PORT}}:80"
 
     volumes:
       - .:/var/www/html
