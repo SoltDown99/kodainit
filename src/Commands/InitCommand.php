@@ -52,12 +52,14 @@ class InitCommand extends Command
         OutputInterface $output
     ): int {
 
-        $name = $input->getArgument('name');
+        $name        = $input->getArgument('name');
+        $workingDir  = getcwd();
+        $projectPath = $workingDir . DIRECTORY_SEPARATOR . $name;
 
-        if (is_dir($name)) {
+        if (is_dir($projectPath)) {
 
             $output->writeln(
-                "<error>Directory '{$name}' already exists.</error>"
+                "<error>Directory '{$projectPath}' already exists.</error>"
             );
 
             return Command::FAILURE;
@@ -87,7 +89,7 @@ class InitCommand extends Command
 
             $installer = new LaravelInstaller();
 
-            $installer->install($name);
+            $installer->install($name, $workingDir);
 
             $output->writeln(
                 '<info>Generating Docker configuration...</info>'
@@ -95,7 +97,7 @@ class InitCommand extends Command
 
             $dockerGenerator = new DockerGenerator();
 
-            $dockerGenerator->generate($name, $appPort);
+            $dockerGenerator->generate($projectPath, $appPort);
 
             $output->writeln(
                 '<info>Configuring environment...</info>'
@@ -103,31 +105,31 @@ class InitCommand extends Command
 
             $envConfigurator = new EnvConfigurator();
 
-            $envConfigurator->configure($name);
+            $envConfigurator->configure($projectPath);
 
             $output->writeln(
                 '<info>Building Docker images...</info>'
             );
 
-            $dockerLauncher->build($name);
+            $dockerLauncher->build($projectPath);
 
             $output->writeln(
                 '<info>Starting containers...</info>'
             );
 
-            $dockerLauncher->up($name);
+            $dockerLauncher->up($projectPath);
 
             $output->writeln(
                 '<info>Waiting for PostgreSQL...</info>'
             );
 
-            $dockerLauncher->waitForDatabase($name);
+            $dockerLauncher->waitForDatabase($projectPath);
 
             $output->writeln(
                 '<info>Waiting for application container...</info>'
             );
 
-            $dockerLauncher->waitForApp($name);
+            $dockerLauncher->waitForApp($projectPath);
 
             $output->writeln(
                 '<info>Installing Filament 4 and admin panel...</info>'
@@ -135,7 +137,7 @@ class InitCommand extends Command
 
             $filamentInstaller = new FilamentInstaller();
 
-            $filamentInstaller->install($name);
+            $filamentInstaller->install($projectPath);
 
             $output->writeln(
                 '<info>Running database migrations...</info>'
@@ -143,7 +145,7 @@ class InitCommand extends Command
 
             $migrationRunner = new MigrationRunner();
 
-            $migrationRunner->migrate($name);
+            $migrationRunner->migrate($projectPath);
 
             $output->writeln(
                 '<info>Creating administrator account...</info>'
@@ -152,7 +154,7 @@ class InitCommand extends Command
             $adminUserCreator = new AdminUserCreator();
 
             $adminUserCreator->create(
-                $name,
+                $projectPath,
                 $adminName,
                 $adminEmail,
                 $adminPassword

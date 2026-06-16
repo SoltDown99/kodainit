@@ -6,21 +6,15 @@ use Symfony\Component\Process\Process;
 
 class LaravelInstaller
 {
-    public function install(string $projectName): void
+    public function install(string $projectName, string $workingDir): void
     {
-        if (is_dir($projectName)) {
-            throw new \RuntimeException(
-                "Directory {$projectName} already exists."
-            );
-        }
-
         $process = new Process([
             'composer',
             'create-project',
             'laravel/laravel',
             $projectName,
             '^12.0'
-        ]);
+        ], $workingDir);
 
         $process->setTimeout(null);
 

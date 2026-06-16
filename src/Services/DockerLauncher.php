@@ -48,11 +48,9 @@ class DockerLauncher
     }
 
     public function waitForDatabase(
-        string $projectName,
+        string $projectPath,
         int $timeout = 60
     ): void {
-
-        $container = "{$projectName}-postgres-1";
 
         $start = time();
 
@@ -60,20 +58,24 @@ class DockerLauncher
 
             $process = new Process([
                 'docker',
-                'inspect',
+                'compose',
+                'ps',
+                '--status',
+                'running',
                 '--format',
-                '{{.State.Health.Status}}',
-                $container
-            ]);
+                'json',
+                'postgres',
+            ], $projectPath);
 
             $process->run();
 
-            $status = trim(
-                $process->getOutput()
-            );
+            $output = trim($process->getOutput());
 
-            if ($status === 'healthy') {
-                return;
+            if ($output !== '') {
+
+                if (str_contains($output, 'healthy')) {
+                    return;
+                }
             }
 
             if ((time() - $start) >= $timeout) {
@@ -87,11 +89,9 @@ class DockerLauncher
     }
 
     public function waitForApp(
-        string $projectName,
+        string $projectPath,
         int $timeout = 60
     ): void {
-
-        $container = "{$projectName}-app-1";
 
         $start = time();
 
@@ -99,19 +99,20 @@ class DockerLauncher
 
             $process = new Process([
                 'docker',
-                'inspect',
+                'compose',
+                'ps',
+                '--status',
+                'running',
                 '--format',
-                '{{.State.Status}}',
-                $container
-            ]);
+                'json',
+                'app',
+            ], $projectPath);
 
             $process->run();
 
-            $status = trim(
-                $process->getOutput()
-            );
+            $output = trim($process->getOutput());
 
-            if ($status === 'running') {
+            if ($output !== '') {
                 return;
             }
 
@@ -124,5 +125,4 @@ class DockerLauncher
             sleep(2);
         }
     }
-
 }
